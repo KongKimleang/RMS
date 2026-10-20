@@ -1,0 +1,32 @@
+services:
+  registration:
+    build: ../../registration-service
+    container_name: registration-service
+    restart: always
+    ports:
+      - "5001:5001"
+    environment:
+      - PORT=5001
+      - MONGO_URI=${MONGO_URI}
+
+  login:
+    build: ../../login-service
+    container_name: login-service
+    restart: always
+    ports:
+      - "5002:5002"
+    environment:
+      - PORT=5002
+      - MONGO_URI=${MONGO_URI}
+      - JWT_SECRET=${JWT_SECRET}
+
+  job-a:
+    build: ../../job-service
+    container_name: job-service-a
+    restart: always
+    ports:
+      - "5003:5003"
+    environment:
+      - PORT=5003
+      - MONGO_URI=${MONGO_URI}
+      - INSTANCE_NAME=job-instance-A

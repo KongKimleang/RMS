@@ -1,0 +1,28 @@
+services:
+  api-gateway:
+    build: ../../api-gateway
+    container_name: api-gateway
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - JWT_SECRET=${JWT_SECRET}
+      - REGISTRATION_URL=http://${EC2_2_PRIVATE_IP}:5001
+      - LOGIN_URL=http://${EC2_2_PRIVATE_IP}:5002
+      - JOB_URL=http://nginx:8080            # jobs go through the load balancer
+      - APPLICATION_URL=http://${EC2_3_PRIVATE_IP}:5004
+    depends_on:
+      - nginx
+
+  nginx:
+    image: nginx:alpine
+    container_name: job-load-balancer
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - EC2_2_PRIVATE_IP=${EC2_2_PRIVATE_IP}
+      - EC2_3_PRIVATE_IP=${EC2_3_PRIVATE_IP}
+    volumes:
+      - ./nginx.conf.template:/etc/nginx/templates/default.conf.template:ro

@@ -1,0 +1,22 @@
+services:
+  application:
+    build: ../../application-service
+    container_name: application-service
+    restart: always
+    ports:
+      - "5004:5004"
+    environment:
+      - PORT=5004
+      - MONGO_URI=${MONGO_URI}
+      - JOB_URL=http://${EC2_1_PRIVATE_IP}:8080     # checks jobs via the load balancer
+
+  job-b:
+    build: ../../job-service
+    container_name: job-service-b
+    restart: always
+    ports:
+      - "5003:5003"
+    environment:
+      - PORT=5003
+      - MONGO_URI=${MONGO_URI}
+      - INSTANCE_NAME=job-instance-B

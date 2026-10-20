@@ -1,0 +1,15 @@
+# Round-robin load balancing across the two Job Service instances
+upstream job_servers {
+    server ${EC2_2_PRIVATE_IP}:5003;   # job-instance-A
+    server ${EC2_3_PRIVATE_IP}:5003;   # job-instance-B
+}
+
+server {
+    listen 8080;
+
+    location / {
+        proxy_pass http://job_servers;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
